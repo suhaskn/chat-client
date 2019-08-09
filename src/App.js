@@ -1,15 +1,18 @@
 import React from 'react';
 import './App.css';
-import * as request from 'superagent'
+import { allMessages } from './actions'
+import { connect } from 'react-redux'
+import MessageForm from './components/MessageForm'
+import UserForm from './components/UserForm'
 
 class App extends React.Component {
 
 
   state = {
     //msg to send
-    message: '',
+    message: ''
     //msg sent
-    messages: []
+ 
   }
 
 
@@ -26,45 +29,33 @@ class App extends React.Component {
       console.log('event.data', event.data)
 
       const messages = JSON.parse(event.data)
-      this.setState({ messages: messages })
+      // this.setState({ messages: messages })
+      this.props.allMessages(messages)
     }
   }
 
-  onSubmit = async (event) => {
-    event.preventDefault()
-    // console.log('this.state.messgae',this.state.message)
-
-    const response = await request
-      .post('http://localhost:5000/message')
-      .send({ message: this.state.message })
-
-    this.setState({ message: '' })
-
-    console.log('response test', response)
-
-  }
-
-  onChange = (event) => {
-    const { value } = event.target
-    this.setState({ message: value })
-
-  }
-
   render() {
-    const messages = this.state.messages
-      .map((message, index) => <p key={index}> {message.text} </p>)
-
-    const form = <form onSubmit={this.onSubmit}>
-      <input type='text'
-        value={this.state.message}
-        onChange={this.onChange} />
-      <button type='submit'>send</button>
-    </form>
+    const messages = this.props.messages
+      .map((message, index) => <p key={index}>{message.user} : {message.text} </p>)
 
     return <main>
-      {form}
+      <MessageForm user={this.props.user}/>
+      <UserForm user ={this.props.user} />
       {messages}</main>
   }
 }
 
-export default App;
+function mapStateToProps(state) {
+  return {
+    messages: state.messages,
+    user: state.user
+  }
+}
+
+const mapDispatchToProps = {
+  allMessages
+}
+
+export default connect(
+  mapStateToProps, mapDispatchToProps
+)(App)
