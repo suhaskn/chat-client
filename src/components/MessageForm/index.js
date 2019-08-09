@@ -6,7 +6,7 @@ export default class MessageForm extends React.Component {
  state = { message: '' }
  onSubmit = async (event) => {
    event.preventDefault()
-   await request.post('http://localhost:5000/message')
+   await request.post('https://damp-reef-74950.herokuapp.com/message')
      .send({ message: this.state.message, user: this.props.user })
    this.setState({ message: '' })
  }
